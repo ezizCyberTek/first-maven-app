@@ -1,6 +1,7 @@
 package com.dice;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
@@ -12,57 +13,87 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 public class jobSearch {
 
 	public static void main(String[] args) {
-		//Set up chrome driver path
+		// Set up chrome driver path
 		WebDriverManager.chromedriver().setup();
-		//invoke selenium webdriver
+		// invoke selenium webdriver
 		WebDriver driver = new ChromeDriver();
-		//fullcreen
+		// fullcreen
 		driver.manage().window().fullscreen();
-		//set universal wait time in case web page is slow
+		// set universal wait time in case web page is slow
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-		
-		/*Step 1. Launch browser and navigate to https://dice.com 
-			  Expected: dice home page should be displayed
-		*/
+
+		/*
+		 * Step 1. Launch browser and navigate to https://dice.com Expected: dice home
+		 * page should be displayed
+		 */
 		String url = "https://dice.com";
 		driver.get(url);
-		
+
 		String actualTitle = driver.getTitle();
-		String expectedTitle = "Job Search for Technology Professionals | Dice.com";
-		
-		if(actualTitle.equals(expectedTitle)) {
+		String expectedTitle = "Find Jobs in Tech | Dice.com";
+
+		if (actualTitle.equals(expectedTitle)) {
 			System.out.println("Step PASS. Dice homepage successfully loaded");
-		}else {
-			System.out.println("Step FAIL. Dice homepage did not load successfully");	
+		} else {
+			System.out.println("Step FAIL. Dice homepage did not load successfully");
 			throw new RuntimeException("Step FAIL. Dice homepage did not load successfully");
 		}
+
 		
-		String keyword ="javascipt developer";
-		driver.findElement(By.id("search-field-keyword")).clear();
-		driver.findElement(By.id("search-field-keyword")).sendKeys(keyword);
+		  ArrayList<String> obj = new ArrayList<String>(); obj.add("Java");
+		  obj.add("Selenium"); obj.add("Java Script"); obj.add("Protractor");
+		  obj.add("Automation"); obj.add("Vb Script"); obj.add("Python");
+		  obj.add("Ruby"); obj.add("UFT"); obj.add("Test Complete");
 		
-		String location = "77064";
-		driver.findElement(By.id("search-field-location")).clear();
-		driver.findElement(By.id("search-field-location")).sendKeys(location);
+		String keyword=null;
+		int countResult=0;
+		int size = obj.size();
 		
-		driver.findElement(By.id("findTechJobs")).click();
+		for(int i=0; i<size; i++) {
+			
+			keyword = obj.get(i);
+					
+			driver.findElement(By.name("q")).clear();
+			driver.findElement(By.name("q")).sendKeys(keyword);
+	
+			String location = "77064";
+			driver.findElement(By.name("l")).clear();
+			driver.findElement(By.name("l")).sendKeys(location);
+	
+			if (i==0) {
+				driver.findElement(By.id("findTechJobs")).click();
+			} else {
+				driver.findElement(By.xpath("//input[@class='btn btn-lg btn-primary btn-block dice-btn mB5']")).click();
+			}
+	
+			String count = driver.findElement(By.id("posiCountId")).getText();
+			// ensure count is more than 0
+			countResult = Integer.parseInt(count.replace(",", ""));
+	
+			if (countResult > 0) {
+				System.out.println(
+						"Step PASS: Keyword : " + keyword + " search returned " + countResult + " results in " + location);
+			} else {
+				System.out.println(
+						"Step FAIL: Keyword : " + keyword + " search returned " + countResult + " results in " + location);
+			}
+			
+			if (i>0) {
+				obj.remove(i);
+				obj.add(i, keyword+"-"+countResult);
+			}
 		
-		String count = driver.findElement(By.id("posiCountId")).getText();
-		System.out.println(count);
-		//ensure count is more than 0
-		int countResult = Integer.parseInt(count.replace(",", ""));
-		
-		if(countResult > 0) {
-			System.out.println( "Step PASS: Keyword : " + keyword +" search returned " +
-			countResult +" results in " + location);
-		}else {
-			System.out.println( "Step FAIL: Keyword : " + keyword +" search returned " +
-					countResult +" results in " + location);
 		}
 		
+		System.out.println("===================================================");
+		
+		for(String item : obj) {
+			System.out.println(item);
+		}
+
 		driver.close();
 		System.out.println("TEST COMPLETED - " + LocalDateTime.now());
-				
+
 	}
-		
+
 }
