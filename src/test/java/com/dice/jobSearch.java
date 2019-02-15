@@ -3,7 +3,7 @@ package com.dice;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
-
+import java.io.*; 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -12,7 +12,7 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class jobSearch {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		// Set up chrome driver path
 		WebDriverManager.chromedriver().setup();
 		// invoke selenium webdriver
@@ -38,12 +38,24 @@ public class jobSearch {
 			System.out.println("Step FAIL. Dice homepage did not load successfully");
 			throw new RuntimeException("Step FAIL. Dice homepage did not load successfully");
 		}
-
 		
-		  ArrayList<String> obj = new ArrayList<String>(); obj.add("Java");
-		  obj.add("Selenium"); obj.add("Java Script"); obj.add("Protractor");
-		  obj.add("Automation"); obj.add("Vb Script"); obj.add("Python");
-		  obj.add("Ruby"); obj.add("UFT"); obj.add("Test Complete");
+		File file = new File("/Users/ezizkurbanov/Documents/workspace2019/firstMavenProject/first-maven-app/src/test/resources/jobs.txt"); 
+		  
+		BufferedReader br = new BufferedReader(new FileReader(file)); 
+		
+		ArrayList<String> obj = new ArrayList<String>(); obj.add("Java");
+		 
+		String st;
+		while((st = br.readLine()) != null){
+			System.out.println("Adding"+st);
+			obj.add(st);
+		}
+		System.out.println("===================================================");
+		for(String item : obj) {
+			System.out.println(item);
+		}
+		
+		System.out.println("===================================================");
 		
 		String keyword=null;
 		int countResult=0;
